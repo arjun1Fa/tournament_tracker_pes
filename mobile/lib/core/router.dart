@@ -7,6 +7,8 @@ import '../providers/auth_provider.dart';
 import '../screens/auth/login_screen.dart';
 import '../screens/auth/register_screen.dart';
 import '../screens/home/home_screen.dart';
+import '../screens/tournaments/create_tournament_screen.dart';
+import '../screens/tournaments/tournament_detail_screen.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authProvider);
@@ -52,6 +54,17 @@ final routerProvider = Provider<GoRouter>((ref) {
             );
           }
           return const HomeScreen();
+        },
+      ),
+      GoRoute(
+        path: '/tournaments/create',
+        builder: (context, state) => const CreateTournamentScreen(),
+      ),
+      GoRoute(
+        path: '/tournaments/:id',
+        builder: (context, state) {
+          final id = int.parse(state.pathParameters['id']!);
+          return TournamentDetailScreen(tournamentId: id);
         },
       ),
     ],

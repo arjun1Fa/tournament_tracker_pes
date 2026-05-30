@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../providers/auth_provider.dart';
+import '../tournaments/tournament_list_screen.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -17,7 +18,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final user = ref.watch(authProvider).user;
 
     final List<Widget> pages = [
-      _TournamentsTab(),
+      const TournamentListScreen(),
       _MatchesTab(),
       _ProfileTab(user: user, onLogout: () {
         ref.read(authProvider.notifier).logout();
@@ -57,23 +58,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 // ---------------------------------------------------------------------------
 // Placeholder Tabs
 // ---------------------------------------------------------------------------
-
-class _TournamentsTab extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Tournaments')),
-      body: const Center(
-        child: Text('Tournament list goes here'),
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {},
-        icon: const Icon(Icons.add),
-        label: const Text('Create'),
-      ),
-    );
-  }
-}
 
 class _MatchesTab extends StatelessWidget {
   @override
