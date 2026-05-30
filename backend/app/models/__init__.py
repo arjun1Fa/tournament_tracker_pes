@@ -1,17 +1,7 @@
-"""Database models package.
-
-Import all models here so Flask-Migrate can discover them.
-"""
-from .user import User, DeviceToken
-from .tournament import Tournament, TournamentParticipant
+"""Models package."""
+from .admin import Admin
+from .tournament import Tournament
+from .player import Player
 from .match import Match
-from .match_stats import MatchStats
 
-__all__ = [
-    'User',
-    'DeviceToken',
-    'Tournament',
-    'TournamentParticipant',
-    'Match',
-    'MatchStats',
-]
+__all__ = ['Admin', 'Tournament', 'Player', 'Match']

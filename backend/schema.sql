@@ -1,102 +1,54 @@
--- =============================================
--- eFootball Tournament Tracker - Database Schema
--- Run this in Supabase SQL Editor
--- =============================================
+-- Drop existing tables
+DROP TABLE IF EXISTS matches CASCADE;
+DROP TABLE IF EXISTS players CASCADE;
+DROP TABLE IF EXISTS tournaments CASCADE;
+DROP TABLE IF EXISTS admins CASCADE;
+DROP TABLE IF EXISTS alembic_version CASCADE;
 
--- Users table
-CREATE TABLE IF NOT EXISTS users (
+-- Create admins table
+CREATE TABLE admins (
     id SERIAL PRIMARY KEY,
-    username VARCHAR(80) UNIQUE NOT NULL,
-    email VARCHAR(120) UNIQUE NOT NULL,
-    password_hash VARCHAR(256) NOT NULL,
-    profile_picture VARCHAR(256),
-    platform VARCHAR(50),
-    favourite_club VARCHAR(100),
-    is_admin BOOLEAN DEFAULT FALSE,
-    is_suspended BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMP DEFAULT NOW()
+    username VARCHAR(50) UNIQUE NOT NULL,
+    password_hash VARCHAR(256) NOT NULL
 );
 
--- Device tokens (for push notifications)
-CREATE TABLE IF NOT EXISTS device_tokens (
-    id SERIAL PRIMARY KEY,
-    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    token VARCHAR(512) NOT NULL,
-    platform VARCHAR(20) NOT NULL,
-    created_at TIMESTAMP DEFAULT NOW()
-);
-
--- Tournaments table
-CREATE TABLE IF NOT EXISTS tournaments (
+-- Create tournaments table
+CREATE TABLE tournaments (
     id SERIAL PRIMARY KEY,
     name VARCHAR(200) NOT NULL,
-    format VARCHAR(50) NOT NULL DEFAULT 'league',
-    status VARCHAR(50) NOT NULL DEFAULT 'open',
-    is_public BOOLEAN DEFAULT TRUE,
-    password_hash VARCHAR(256),
-    max_participants INTEGER DEFAULT 8,
-    created_by INTEGER REFERENCES users(id),
-    created_at TIMESTAMP DEFAULT NOW()
+    status VARCHAR(30) NOT NULL DEFAULT 'registration',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
--- Tournament participants (join table)
-CREATE TABLE IF NOT EXISTS tournament_participants (
+-- Create players table
+CREATE TABLE players (
     id SERIAL PRIMARY KEY,
     tournament_id INTEGER NOT NULL REFERENCES tournaments(id) ON DELETE CASCADE,
-    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    seed INTEGER,
-    joined_at TIMESTAMP DEFAULT NOW(),
-    UNIQUE(tournament_id, user_id)
+    name VARCHAR(100) NOT NULL,
+    in_game_team_name VARCHAR(100),
+    favourite_club VARCHAR(100),
+    team_image_url VARCHAR(500)
 );
 
--- Matches table
-CREATE TABLE IF NOT EXISTS matches (
+-- Create matches table
+CREATE TABLE matches (
     id SERIAL PRIMARY KEY,
     tournament_id INTEGER NOT NULL REFERENCES tournaments(id) ON DELETE CASCADE,
-    round VARCHAR(100) NOT NULL,
+    round_name VARCHAR(100) NOT NULL,
+    stage VARCHAR(20) NOT NULL DEFAULT 'league',
     match_order INTEGER NOT NULL DEFAULT 0,
-    player1_id INTEGER REFERENCES users(id),
-    player2_id INTEGER REFERENCES users(id),
-    team1_name VARCHAR(100),
-    team2_name VARCHAR(100),
+    player1_id INTEGER REFERENCES players(id),
+    player2_id INTEGER REFERENCES players(id),
     score1 INTEGER,
     score2 INTEGER,
-    status VARCHAR(50) NOT NULL DEFAULT 'scheduled',
-    verified_by_player1 BOOLEAN DEFAULT FALSE,
-    verified_by_player2 BOOLEAN DEFAULT FALSE,
-    reported_by INTEGER REFERENCES users(id),
-    created_at TIMESTAMP DEFAULT NOW()
+    possession1 INTEGER,
+    possession2 INTEGER,
+    shots1 INTEGER,
+    shots2 INTEGER,
+    shots_on_target1 INTEGER,
+    shots_on_target2 INTEGER,
+    status VARCHAR(20) NOT NULL DEFAULT 'scheduled',
+    completed_at TIMESTAMP WITH TIME ZONE,
+    next_match_id INTEGER REFERENCES matches(id),
+    next_match_slot INTEGER
 );
-
--- Match stats (detailed per-player stats)
-CREATE TABLE IF NOT EXISTS match_stats (
-    id SERIAL PRIMARY KEY,
-    match_id INTEGER NOT NULL REFERENCES matches(id) ON DELETE CASCADE,
-    user_id INTEGER NOT NULL REFERENCES users(id),
-    team_name VARCHAR(100) NOT NULL,
-    possession FLOAT,
-    shots INTEGER,
-    shots_on_target INTEGER,
-    fouls INTEGER,
-    offsides INTEGER,
-    corner_kicks INTEGER,
-    free_kicks INTEGER,
-    passes INTEGER,
-    successful_passes INTEGER,
-    crosses INTEGER,
-    interceptions INTEGER,
-    tackles INTEGER,
-    saves INTEGER
-);
-
--- Indexes for performance
-CREATE INDEX idx_matches_tournament ON matches(tournament_id);
-CREATE INDEX idx_matches_player1 ON matches(player1_id);
-CREATE INDEX idx_matches_player2 ON matches(player2_id);
-CREATE INDEX idx_match_stats_match ON match_stats(match_id);
-CREATE INDEX idx_participants_tournament ON tournament_participants(tournament_id);
-CREATE INDEX idx_device_tokens_user ON device_tokens(user_id);
-
--- Seed the admin user (WinterFA)
--- Password will be set via the ADMIN_PASSWORD env var when the app first starts.
--- The app's seed_admin() function handles this automatically.
