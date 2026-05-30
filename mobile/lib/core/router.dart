@@ -3,14 +3,16 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../providers/auth_provider.dart';
-// Placeholder imports until screens are built
 import '../screens/auth/login_screen.dart';
 import '../screens/auth/register_screen.dart';
 import '../screens/home/home_screen.dart';
 import '../screens/tournaments/create_tournament_screen.dart';
 import '../screens/tournaments/tournament_detail_screen.dart';
+import '../screens/tournaments/standings_screen.dart';
+import '../screens/tournaments/leaderboard_screen.dart';
 import '../screens/matches/match_detail_screen.dart';
 import '../screens/matches/report_match_screen.dart';
+import '../screens/admin/admin_panel_screen.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authProvider);
@@ -82,6 +84,24 @@ final routerProvider = Provider<GoRouter>((ref) {
           final id = int.parse(state.pathParameters['id']!);
           return ReportMatchScreen(matchId: id);
         },
+      ),
+      GoRoute(
+        path: '/tournaments/:id/standings',
+        builder: (context, state) {
+          final id = int.parse(state.pathParameters['id']!);
+          return StandingsScreen(tournamentId: id);
+        },
+      ),
+      GoRoute(
+        path: '/tournaments/:id/leaderboard',
+        builder: (context, state) {
+          final id = int.parse(state.pathParameters['id']!);
+          return LeaderboardScreen(tournamentId: id);
+        },
+      ),
+      GoRoute(
+        path: '/admin',
+        builder: (context, state) => const AdminPanelScreen(),
       ),
     ],
   );

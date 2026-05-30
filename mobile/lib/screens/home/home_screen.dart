@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../providers/auth_provider.dart';
 import '../tournaments/tournament_list_screen.dart';
+import '../profile/profile_screen.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -15,14 +15,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final user = ref.watch(authProvider).user;
-
     final List<Widget> pages = [
       const TournamentListScreen(),
-      _MatchesTab(),
-      _ProfileTab(user: user, onLogout: () {
-        ref.read(authProvider.notifier).logout();
-      }),
+      const _MatchesTab(),
+      const ProfileScreen(),
     ];
 
     return Scaffold(
@@ -55,70 +51,28 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 }
 
-// ---------------------------------------------------------------------------
-// Placeholder Tabs
-// ---------------------------------------------------------------------------
-
 class _MatchesTab extends StatelessWidget {
+  const _MatchesTab();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('My Matches')),
-      body: const Center(
-        child: Text('Upcoming matches go here'),
-      ),
-    );
-  }
-}
-
-class _ProfileTab extends StatelessWidget {
-  final dynamic user;
-  final VoidCallback onLogout;
-
-  const _ProfileTab({required this.user, required this.onLogout});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Profile'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: onLogout,
-          ),
-        ],
-      ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const CircleAvatar(
-              radius: 48,
-              child: Icon(Icons.person, size: 48),
-            ),
+            Icon(Icons.sports_soccer_outlined, size: 64, color: Colors.grey.shade400),
             const SizedBox(height: 16),
             Text(
-              user?.username ?? 'Player',
-              style: Theme.of(context).textTheme.titleLarge,
+              'Your upcoming matches will appear here',
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.grey.shade600),
             ),
             const SizedBox(height: 8),
-            if (user?.isAdmin == true)
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Text(
-                  'ADMIN',
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.primary,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 12,
-                  ),
-                ),
-              ),
+            Text(
+              'Join a tournament to get started.',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
           ],
         ),
       ),

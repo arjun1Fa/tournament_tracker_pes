@@ -140,7 +140,7 @@ class _ReportMatchScreenState extends ConsumerState<ReportMatchScreen> {
             if (_scannedData != null && !_isScanning) ...[
               const SizedBox(height: 32),
               Card(
-                color: Theme.of(context).colorScheme.primary.withOpacity(0.05),
+                color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.05),
                 elevation: 0,
                 child: Padding(
                   padding: const EdgeInsets.all(16),
@@ -175,7 +175,7 @@ class _ReportMatchScreenState extends ConsumerState<ReportMatchScreen> {
               const SizedBox(height: 16),
               
               DropdownButtonFormField<String>(
-                value: _myTeam,
+                initialValue: _myTeam,
                 decoration: const InputDecoration(labelText: 'Which score is yours?'),
                 items: [
                   DropdownMenuItem(value: 'team1', child: Text('Team 1 (Left - ${_scannedData!['score1']})')),

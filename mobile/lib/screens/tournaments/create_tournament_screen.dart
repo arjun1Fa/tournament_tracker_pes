@@ -80,7 +80,7 @@ class _CreateTournamentScreenState extends ConsumerState<CreateTournamentScreen>
               const SizedBox(height: 24),
               
               DropdownButtonFormField<String>(
-                value: _selectedFormat,
+                initialValue: _selectedFormat,
                 decoration: const InputDecoration(
                   labelText: 'Format',
                   prefixIcon: Icon(Icons.list_alt),

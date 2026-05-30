@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../providers/tournament_provider.dart';
+import '../../providers/match_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../models/tournament.dart';
 
@@ -156,6 +157,30 @@ class _TournamentDetailScreenState extends ConsumerState<TournamentDetailScreen>
                       child: const Text('Start Tournament (Admin)'),
                     ),
                   ),
+
+                // Standings & Leaderboard buttons (visible once tournament is ongoing)
+                if (tournament.status != 'open') ...[
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: () => context.push('/tournaments/${tournament.id}/standings'),
+                          icon: const Icon(Icons.table_chart),
+                          label: const Text('Standings'),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: () => context.push('/tournaments/${tournament.id}/leaderboard'),
+                          icon: const Icon(Icons.leaderboard),
+                          label: const Text('Leaderboard'),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
 
                 const SizedBox(height: 32),
                 

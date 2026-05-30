@@ -119,6 +119,27 @@ class ApiClient {
     });
   }
 
+  // --- Admin API ---
+  Future<Response> getAdminUsers() {
+    return dio.get('/admin/users');
+  }
+
+  Future<Response> suspendUser(int userId, bool suspended) {
+    return dio.post('/admin/users/$userId/suspend', data: {'suspended': suspended});
+  }
+
+  Future<Response> getAdminTournaments() {
+    return dio.get('/admin/tournaments');
+  }
+
+  Future<Response> resolveDispute(int matchId, Map<String, dynamic> data) {
+    return dio.post('/admin/disputes/$matchId/resolve', data: data);
+  }
+
+  Future<Response> getAdminAnalytics() {
+    return dio.get('/admin/analytics');
+  }
+
   // Tokens
   Future<void> saveToken(String token) async {
     await _storage.write(key: 'jwt_token', value: token);

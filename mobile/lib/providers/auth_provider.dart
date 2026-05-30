@@ -16,29 +16,31 @@ class AuthState {
 
   bool get isAuthenticated => user != null;
 
-  AuthState copyWith({User? user, bool? isLoading, String? error}) {
+  AuthState copyWith({User? user, bool? isLoading, String? error, bool clearUser = false}) {
     return AuthState(
-      user: user ?? this.user,
+      user: clearUser ? null : (user ?? this.user),
       isLoading: isLoading ?? this.isLoading,
-      error: error, // Can be null intentionally
+      error: error,
     );
   }
 }
 
-class AuthNotifier extends StateNotifier<AuthState> {
-  final ApiClient _apiClient;
-
-  AuthNotifier(this._apiClient) : super(AuthState(isLoading: true)) {
-    checkAuthStatus();
+class AuthNotifier extends Notifier<AuthState> {
+  @override
+  AuthState build() {
+    // Check auth on initialization
+    _checkAuthStatus();
+    return AuthState(isLoading: true);
   }
 
-  Future<void> checkAuthStatus() async {
+  ApiClient get _apiClient => ref.read(apiClientProvider);
+
+  Future<void> _checkAuthStatus() async {
     try {
       final response = await _apiClient.getMe();
       final user = User.fromJson(response.data['user']);
       state = AuthState(user: user, isLoading: false);
     } catch (e) {
-      // If error (e.g. 401 or network), clear token and set unauthenticated
       await _apiClient.clearToken();
       state = AuthState(isLoading: false);
     }
@@ -50,7 +52,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
       final response = await _apiClient.login(email, password);
       final token = response.data['access_token'];
       final user = User.fromJson(response.data['user']);
-      
+
       await _apiClient.saveToken(token);
       state = AuthState(user: user, isLoading: false);
       return true;
@@ -70,7 +72,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
       final response = await _apiClient.register(email, username, password);
       final token = response.data['access_token'];
       final user = User.fromJson(response.data['user']);
-      
+
       await _apiClient.saveToken(token);
       state = AuthState(user: user, isLoading: false);
       return true;
@@ -90,7 +92,4 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
 }
 
-final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
-  final apiClient = ref.watch(apiClientProvider);
-  return AuthNotifier(apiClient);
-});
+final authProvider = NotifierProvider<AuthNotifier, AuthState>(AuthNotifier.new);
