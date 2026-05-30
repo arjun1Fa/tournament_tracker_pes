@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: efootball-tracker-api
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: DATABASE_URL
+        sync: false  # Set manually to your Supabase connection string
+      - key: JWT_SECRET_KEY
+        generateValue: true
+      - key: ADMIN_PASSWORD
+        sync: false  # Set manually
+      - key: FIREBASE_CREDENTIALS_JSON
+        sync: false  # Path to Firebase service account JSON
+      - key: FLASK_ENV
+        value: production
+    healthCheckPath: /api/auth/me
