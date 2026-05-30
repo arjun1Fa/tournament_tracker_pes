@@ -181,11 +181,56 @@ class _TournamentDetailScreenState extends ConsumerState<TournamentDetailScreen>
                       );
                     },
                   ),
+                // Matches List
+                const SizedBox(height: 32),
+                Text(
+                  'Tournament Matches',
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+                const SizedBox(height: 8),
+                _TournamentMatchesList(tournamentId: tournament.id),
               ],
             ),
           );
         },
       ),
+    );
+  }
+}
+
+class _TournamentMatchesList extends ConsumerWidget {
+  final int tournamentId;
+
+  const _TournamentMatchesList({required this.tournamentId});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final matchesAsync = ref.watch(tournamentMatchesProvider(tournamentId));
+    
+    return matchesAsync.when(
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (e, st) => Text('Error loading matches: $e'),
+      data: (matches) {
+        if (matches.isEmpty) return const Text('No matches scheduled yet.');
+        
+        return ListView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: matches.length,
+          itemBuilder: (ctx, i) {
+            final match = matches[i];
+            return Card(
+              margin: const EdgeInsets.only(bottom: 8),
+              child: ListTile(
+                onTap: () => context.push('/matches/${match.id}'),
+                title: Text('${match.team1Name ?? match.player1?.username ?? 'TBD'} vs ${match.team2Name ?? match.player2?.username ?? 'TBD'}'),
+                subtitle: Text('${match.round} • Status: ${match.status}'),
+                trailing: const Icon(Icons.chevron_right),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 }

@@ -9,6 +9,8 @@ import '../screens/auth/register_screen.dart';
 import '../screens/home/home_screen.dart';
 import '../screens/tournaments/create_tournament_screen.dart';
 import '../screens/tournaments/tournament_detail_screen.dart';
+import '../screens/matches/match_detail_screen.dart';
+import '../screens/matches/report_match_screen.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authProvider);
@@ -65,6 +67,20 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) {
           final id = int.parse(state.pathParameters['id']!);
           return TournamentDetailScreen(tournamentId: id);
+        },
+      ),
+      GoRoute(
+        path: '/matches/:id',
+        builder: (context, state) {
+          final id = int.parse(state.pathParameters['id']!);
+          return MatchDetailScreen(matchId: id);
+        },
+      ),
+      GoRoute(
+        path: '/matches/:id/report',
+        builder: (context, state) {
+          final id = int.parse(state.pathParameters['id']!);
+          return ReportMatchScreen(matchId: id);
         },
       ),
     ],
