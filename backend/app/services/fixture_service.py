@@ -43,6 +43,26 @@ def generate_round_robin(tournament, players):
         # Rotate: keep first fixed, rotate the rest
         player_ids = [player_ids[0]] + [player_ids[-1]] + player_ids[1:-1]
 
+    # Double round-robin (Home & Away)
+    second_leg = []
+    total_rounds = n - 1
+    for match in matches:
+        first_leg_round = int(match.round_name.split()[1])
+        new_round = first_leg_round + total_rounds
+        
+        m = Match(
+            tournament_id=match.tournament_id,
+            round_name=f"Matchday {new_round}",
+            stage='league',
+            match_order=match_order,
+            player1_id=match.player2_id,
+            player2_id=match.player1_id,
+            status='scheduled',
+        )
+        second_leg.append(m)
+        match_order += 1
+
+    matches.extend(second_leg)
     return matches
 
 
