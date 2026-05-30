@@ -1,4 +1,3 @@
-I've extracted the text from your PDF and converted it into copyable text below. 
 
 ---
 
