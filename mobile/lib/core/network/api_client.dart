@@ -38,13 +38,8 @@ class ApiClient {
   }
 
   String _getBaseUrl() {
-    if (kReleaseMode) {
-      return _baseUrlProd;
-    }
-    if (Platform.isAndroid) {
-      return _baseUrlLocalAndroid; // Android emulator localhost alias
-    }
-    return _baseUrlLocalIOS; // iOS simulator / Web localhost
+    // Production Render URL
+    return 'https://efootball-tracker.onrender.com/api';
   }
 
   // --- Auth API ---
